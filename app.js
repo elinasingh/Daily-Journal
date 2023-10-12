@@ -10,11 +10,19 @@ const aboutContent = "It is said that he lived in this street, and that it was t
 const contactContent = "Scelerisque eleifend until the price vulputate sapien. Roncus urn is neither cartoon nor basketball. Let us live with the bow of God, let us drink the bow of the cat. It will be followed by the education of the family of the sad family. Risus viverra adipiscing at in the whole land of feugiat. It is not wise to drink the bow of life that is expected from arrows. The result is sometimes a lot of real estate. But now the target is the propaganda lake. Sometimes putting the internet itself is a pain in the ass. For the whole element of the pillow is neither. The pregnant woman was told that there was no clinical placement. Mauris is in some sort of environment as a disease. To put a twister and to always cartoon for free.";
 
 const app = express();
-
 app.set('view engine', 'ejs');
-
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
+
+mongoose.connect("mongodb://127.0.0.1:27017/blogDB", {useNewUrlParser: true, 
+ useUnifiedTopology: true});
+
+ const postSchema = new mongoose.Schema({
+  name: String,
+  content: String
+ })
+
+ const Post = mongoose.model('Post', postSchema);
 
 let posts = [];
 
@@ -25,25 +33,18 @@ app.get("/", function(req, res){
     });
 });
 
-app.get("/about", function(req, res){
-  res.render("about", {aboutContent: aboutContent});
-});
-
-app.get("/contact", function(req, res){
-  res.render("contact", {contactContent: contactContent});
-});
-
 app.get("/compose", function(req, res){
   res.render("compose");
 });
 
 app.post("/compose", function(req, res){
-  const post = {
+  const post = new Post ({
     title: req.body.postTitle,
     content: req.body.postBody
-  };
+  });
 
-  posts.push(post);
+  post.save();
+  // posts.push(post);
 
   res.redirect("/");
 
@@ -63,6 +64,14 @@ app.get("/posts/:postName", function(req, res){
     }
   });
 
+});
+
+app.get("/about", function(req, res){
+  res.render("about", {aboutContent: aboutContent});
+});
+
+app.get("/contact", function(req, res){
+  res.render("contact", {contactContent: contactContent});
 });
 
 app.listen(3000, function() {

@@ -18,19 +18,26 @@ mongoose.connect("mongodb://127.0.0.1:27017/blogDB", {useNewUrlParser: true,
  useUnifiedTopology: true});
 
  const postSchema = new mongoose.Schema({
-  name: String,
+  title: String,
   content: String
  })
 
  const Post = mongoose.model('Post', postSchema);
 
-let posts = [];
+// let posts = [];
 
-app.get("/", function(req, res){
+app.get("/", async function(req, res){
+ try{
+  const posts = await Post.find({})
+  //console.log(posts);
   res.render("home", {
     startingContent: homeStartingContent,
     posts: posts
     });
+
+ } catch (err) {
+  console.log(err);
+ }
 });
 
 app.get("/compose", function(req, res){
